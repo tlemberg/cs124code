@@ -11,3 +11,4 @@ void delete_list(int);
 void insert_list(int);
 list_node *get_head();
 void free_list(void);
+void print_list(int);

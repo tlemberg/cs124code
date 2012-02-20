@@ -38,10 +38,10 @@ void delete_list(int delete_name)
     while (ptr != NULL)
     {
         // check for number
-        if (ptr->name == delete_name)
+        if(ptr->name == delete_name)
         {
             // delete from head
-            if (ptr == first)
+            if(ptr == first)
             {
                 first = ptr->next;
                 free(ptr);
@@ -89,6 +89,22 @@ void insert_list(int new_name)
         newptr->next = first;
         first = newptr;
     }
+}
+
+void print_list(int node_name)
+{
+    list_node *ptr;
+    ptr = first;
+    while(ptr != NULL)
+    {
+        if(ptr-> name == node_name)
+        {
+            printf("%d,", ptr->name);
+            break;
+        }
+        ptr = ptr->next;
+    }
+    //printf("\n");
 }
 
 /*

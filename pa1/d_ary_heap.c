@@ -47,17 +47,25 @@ node delete_min(node Heap[], int location[])
         return empty_node;
     }
     
+    // check if heap has one element
+    if(ind_last == 0)
+    {
+        node return_node = Heap[0];
+        location[return_node.name] = -1;
+        ind_last = -1;
+        return return_node;
+    }
+    
     // remove first node from heap, erase location, repalce it with last node
     node return_node = Heap[0];
     location[return_node.name] = -1;
     Heap[0] = Heap[ind_last];
     
+    // update location of last element
+    location[Heap[0].name] = 0;
+    
     // remember heap now has one fewer elements
     ind_last--;
-    
-    // if heap is empty no need to do anything
-    if(ind_last == -1)
-        return return_node;
     
     // perform necessary switches to correct heap:
     bool is_correct = false;
@@ -68,19 +76,15 @@ node delete_min(node Heap[], int location[])
         // children of node j are at indices d*j+1 through d*j+d, so check against all these
         // also want to remember smallest in case we need to switch 
         int smallest_ind = cur_ind;
-        
-        // check if we are in the last row. If so, this is our last iteration
-        int stop_val = 0;
-        if(cur_ind*d+d > ind_last)
-        {
-            stop_val = d - (cur_ind*d+d-ind_last) +1;
-            is_correct = true;
-        }
-        else
-            stop_val = d+1;
+         
         // check all children
-        for(int i = 1; i < stop_val; i++)
+        for(int i = 1; i < d+1; i++)
         {
+            // ensure we're still in the Heap
+            if(cur_ind*d+i > ind_last)
+                break;
+
+                
             // found a smaller child
             if (Heap[cur_ind].dist > Heap[(cur_ind*d+i)].dist)
             {
@@ -91,11 +95,23 @@ node delete_min(node Heap[], int location[])
         }
         
         // if any children were smaller, swap smallest such node with its parent
-        if(smallest_ind!= cur_ind)
+        if(smallest_ind != cur_ind)
         {
-            node temp = Heap[cur_ind];
-            Heap[cur_ind] = Heap[smallest_ind];
-            Heap[smallest_ind] = temp;
+            // create temporary variable for switching; be extra careful
+            node temp1 = Heap[cur_ind];
+            node temp2 = Heap[smallest_ind];
+            int temp_location1 = location[temp1.name];
+            int temp_location2 = location[temp2.name];
+            
+            // update location of cur_ind and smallest_ind
+            location[Heap[cur_ind].name] = temp_location2;
+            location[Heap[smallest_ind].name] = temp_location1;
+            
+            // update cur_ind and smallest_ind in the heap
+            Heap[cur_ind] = temp2;
+            Heap[smallest_ind] = temp1;
+            
+            // update cur_ind
             cur_ind = smallest_ind;
         }
         
@@ -107,14 +123,17 @@ node delete_min(node Heap[], int location[])
 }
 
 /*
- *  Function for inserting a new element into the heap. Takes the element and the 
- *  heap as arguments. No returns
+ *  Function for inserting a new element into the heap. Takes the element, the 
+ *  heap, and the location array as arguments. No returns
  */
 void insert(node new_node, node Heap[], int location[])
 {
     // insert new element at the end of the heap
     Heap[ind_last+1] = new_node;
     ind_last++;
+    
+    // update location array
+    location[Heap[ind_last].name] = ind_last;
     
     // repeatedly check if inserted node is less than its parent, and if so switch them
     bool is_correct = false;
@@ -126,21 +145,27 @@ void insert(node new_node, node Heap[], int location[])
         // check if parent and child should be switched
         if(Heap[(cur_ind-1)/d].dist > Heap[cur_ind].dist)
         {
-            // switch parent and child
-            node temp = Heap[(cur_ind-1)/d];
-            Heap[(cur_ind-1)/d] = Heap[cur_ind];
-            Heap[cur_ind] = temp;
+            // create temporary variable to switch parent and child
+            node temp1 = Heap[(cur_ind-1)/d];
+            node temp2 = Heap[cur_ind];
+            int temp_location1 = (cur_ind-1)/d;
+            int temp_location2 = cur_ind;
+            
+            // update location array
+            location[Heap[(cur_ind-1)/d].name] = temp_location2;
+            location[Heap[cur_ind].name] = temp_location1; 
+            
+            // update nodes
+            Heap[(cur_ind-1)/d] = temp2;
+            Heap[cur_ind] = temp1;
+            
+            // update current index
             cur_ind = (cur_ind -1)/d;
         }
         // otherwise we're done
         else
-        {
-            // tell loop to stop
             is_correct = true;
-            
-            // remember where this node is in the tree
-            location[new_node.name] = cur_ind;
-        }
+
     }
 }
 
@@ -148,9 +173,9 @@ void insert(node new_node, node Heap[], int location[])
  *  Function for changing an element in the heap. Takes the new value for dist, the element 
  *  and the heap as arguments. No returns. If element is not found, inserts it in the heap
  */
-void change(int new_dist, node old_node, node Heap[], int location[])
+void change(node old_node, node Heap[], int location[])
 {
-    // insert old node if its not in the Heap yet
+    // insert old node if it's not in the Heap yet
     if(location[old_node.name] == -1)
     {
         insert(old_node, Heap, location);
@@ -159,8 +184,9 @@ void change(int new_dist, node old_node, node Heap[], int location[])
     
     // otherwise change value and perform necesarry switches  
     
-    // update distance
-    Heap[location[old_node.name]].dist = new_dist;
+    // update distance and previous
+    Heap[location[old_node.name]].dist = old_node.dist;
+    Heap[location[old_node.name]].prev = old_node.prev;
 
     // fix heap structure
     
@@ -173,22 +199,27 @@ void change(int new_dist, node old_node, node Heap[], int location[])
         // check if parent and child should be switched
         if(Heap[(cur_ind-1)/d].dist > Heap[cur_ind].dist)
         {
-            // switch parent and child
-            node temp = Heap[(cur_ind-1)/d];
-            Heap[(cur_ind-1)/d] = Heap[cur_ind];
-            Heap[cur_ind] = temp;
+            // create temporary variable to switch parent and child
+            node temp1 = Heap[(cur_ind-1)/d];
+            node temp2 = Heap[cur_ind];
+            int temp_location1 = (cur_ind-1)/d;
+            int temp_location2 = cur_ind;
+            
+            // update location array
+            location[Heap[(cur_ind-1)/d].name] = temp_location2;
+            location[Heap[cur_ind].name] = temp_location1; 
+            
+            // update nodes
+            Heap[(cur_ind-1)/d] = temp2;
+            Heap[cur_ind] = temp1;
+            
+            // update current index
             cur_ind = (cur_ind -1)/d;
         }
         
         // otherwise we're done
         else
-        {
-            // stop loop
             is_correct = true;
-            
-            // update location
-            location[old_node.name] = cur_ind;
-        } 
     }  
 }
 
@@ -197,7 +228,7 @@ void change(int new_dist, node old_node, node Heap[], int location[])
  */
 int size_Heap()
 {
-    return ind_last +1;
+    return ind_last + 1;
 }
  
 // code for testing

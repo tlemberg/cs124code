@@ -15,7 +15,7 @@ float sort_MST(int, node[]);
 int
 main(int argc, char *argv[])
 {
-    int num_nodes = 8*2048;
+    int num_nodes = 8*1024;
     clock_t start = clock();
     part1(num_nodes);
     /*
@@ -57,36 +57,42 @@ void part1(int num_nodes)
     init_Heap_vars(num_nodes, (num_nodes * (num_nodes-1))/2);
     
     // create Heap
-    node Heap[num_nodes];
+    node *Heap = (node *) malloc(sizeof(node)*num_nodes);
     
     // create array, indexed by name, that remembers the index of each element in the heap
     int location[num_nodes];
     
     // initialize graph
-    node graph[num_nodes];
+    node *graph = (node *) malloc(sizeof(node)*num_nodes);
     
     /*
      * (i)      randomly initialize edge weights from 0 to 1
      * (ii)     create struct node for each graph node
      * (iii)    intialize distance and previous values 
      * (iv)     create V-S list
+     * (v)      initialize heap to empty
      */
      
-    srand(time(NULL));
+    // srand(time(NULL));
     for(int i = 0; i < num_nodes; i++)
     {
         // want j < i since row i has i elements
         for(int j = 0; j < i; j++)
         {
             // edge (i,j) gets stored by (i^2-i)/2+j
-            edge_arr[(i*i-i)/2+j] = (double)rand()/(double)RAND_MAX;
+            if(i == num_nodes-1)
+            {
+                edge_arr[(i*i-i)/2+j] = 1;//(double)rand()/(double)RAND_MAX;
+            }
+            else
+                edge_arr[(i*i-i)/2+j] = (double)rand()/(double)RAND_MAX+1;
         }
         
         // name each node
         graph[i].name = i;
         
         // here all edges are positive so we'll let -1 = infinity
-        graph[i].dist = -1.;
+        graph[i].dist = -1;//(double)rand()/(double)RAND_MAX;//-1.;
         
         // each node points to itself initially, we name nodes by unique integers
         // so no need for pointers
@@ -97,21 +103,36 @@ void part1(int num_nodes)
         
         // initially no node is in the heap
         location[i] = -1;
+        
+
+        // set heap to empty
+        Heap[i].dist = 100000;
+        Heap[i].prev = 100000;
+        Heap[i].name = 100000;
+
     }
+    
     
     // set distance to first node to 0
     graph[0].dist = 0;
     
     // insert first node into the heap
-    insert(graph[0], Heap, location);
+    node insert_node = graph[0];
+    insert(insert_node, Heap, location);
     
     while(size_Heap() != 0)
     {
         // take smallest node from the heap
         node v = delete_min(Heap, location);
         
+        // ensure Heap wasn't somehow empty
+        if(v.dist == -100.)
+            break;
+        
         // delete the node from V-S
         delete_list(v.name);
+       
+        print_list(v.name);
         
         // get head node from V-S
         list_node *ptr = get_head();
@@ -134,16 +155,16 @@ void part1(int num_nodes)
             }
             
             // check if we need to update
-            if((((graph[current_name].dist > edge_arr[(a*a-a)/2+b]) 
-                || graph[current_name].dist == -1)))// && edge_arr[(a*a-a)/2+b] < .6)
+            if(((graph[current_name].dist > edge_arr[(a*a-a)/2+b]) || graph[current_name].dist == -1))
             {
-                // index of edge (i,j) is given by (i^2-i)/2+j where i<j
+                // index of edge (i,j) is given by (i^2-i)/2+j where i>j
                 // perform update
                 graph[current_name].dist = edge_arr[(a*a-a)/2+b];
                 graph[current_name].prev = v.name;
                 
                 // insert/update element in the heap
-                change(graph[current_name].dist, graph[current_name], Heap, location);
+                node change_node = graph[current_name];
+                change(change_node, Heap, location);
             }
             ptr = ptr->next;
         }  
@@ -157,6 +178,12 @@ void part1(int num_nodes)
     
     // free edges
     free(edge_arr);
+    
+    // free heap
+    free(Heap);
+    
+    // free graph
+    free(graph);
     
     // free list
     free_list();
@@ -221,6 +248,29 @@ float sort_MST(int num_nodes, node graph[])
             graph[0].dist + graph[1].dist + graph[2].dist + graph[3].dist);
     printf("Node order: %d\n, %d\n, %d\n, %d\n", 
             graph[0].prev , graph[1].prev , graph[2].prev , graph[3].prev);
+    */
+    
+    /*
+    
+    for(int i = 0; i < num_nodes; i++)
+    {
+        if(graph[i].dist != (double)rand()/(double)RAND_MAX)
+        {
+            printf("Changed\n");
+            graph[i].dist = (double)rand()/(double)RAND_MAX;
+        }
+        change(graph[i], Heap, location);
+    }
+    
+    
+    float prev_dists =0;
+    for(int i = 0; i < num_nodes;i++)
+    {
+        int cur_dist = delete_min(Heap, location).dist;
+        if(cur_dist < prev_dists)
+            printf("ERROR");
+        prev_dists = cur_dist;
+    }
     */
 
 

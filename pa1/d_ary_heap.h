@@ -10,5 +10,5 @@ void init_Heap_vars(int, int);
 node delete_min(node[], int[]);
 void insert(node, node[], int[]);
 int size_Heap();
-void change(int, node, node[], int[]);
+void change(node, node[], int[]);
 
