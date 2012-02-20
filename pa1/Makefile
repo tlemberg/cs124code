@@ -10,7 +10,7 @@
 CC = gcc
 
 # flags to pass compiler
-CFLAGS = -ggdb -std=c99 -Wall -Werror
+CFLAGS = -ggdb -std=c99 -Wall -Werror -lm
 
 # name for executable
 EXE = prim

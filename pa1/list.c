@@ -97,14 +97,11 @@ void print_list(int node_name)
     ptr = first;
     while(ptr != NULL)
     {
-        if(ptr-> name == node_name)
-        {
-            printf("%d,", ptr->name);
-            break;
-        }
+        printf("%d,", ptr->name);
         ptr = ptr->next;
     }
-    //printf("\n");
+    printf("\n");
+    printf("\n");
 }
 
 /*
