@@ -28,7 +28,7 @@ void init_Heap_vars(int numNode, int numEdge)
     num_nodes = numNode;
     
     // optimal value for d is |E|/|V|, so initialize as such
-    d = numEdge / numNode;
+    d = 2;//numEdge / numNode;
 }
 
 /*
@@ -43,7 +43,6 @@ node delete_min(node Heap[], int location[])
         node empty_node;
         empty_node.dist = -100.;
         empty_node.name = 0;
-        empty_node.prev = 0;
         return empty_node;
     }
     
@@ -186,7 +185,6 @@ void change(node old_node, node Heap[], int location[])
     
     // update distance and previous
     Heap[location[old_node.name]].dist = old_node.dist;
-    Heap[location[old_node.name]].prev = old_node.prev;
 
     // fix heap structure
     

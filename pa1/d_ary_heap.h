@@ -3,7 +3,6 @@ typedef struct
 {   
     int name;
     float dist;
-    int prev;
 }node;
 
 // struct for graph node positions. we only need these for parts 2 and 3
