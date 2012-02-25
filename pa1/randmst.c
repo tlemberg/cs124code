@@ -78,6 +78,8 @@ void print_misuse() {
 void print_usage() {
   printf("Usage:\n  randmst ENV NUMPOINTS NUMTRIALS DIMENSION\n");
   printf("  ENV          # An integer on the interval [0, %d]\n", n_environment - 1);
+  printf("                 # 0 -> Submission environment\n");
+  printf("                 # 1 -> Developer environment\n");
   printf("  NUMPOINTS    # The number of points in the graph\n");
   printf("  NUMTRIALS    # The number of trials to perform\n");
   printf("  DIMENSION    # The number of dimensions assigned to each node\n");
