@@ -9,11 +9,10 @@
 #include "d_ary_heap.h"
 #include "list.h"
 
-void worker(int, int);
-void sum_MST(int, node[]);
-float sort_MST(int, node[]);
+double sum_MST(int, node[]);
+double sort_MST(int, node[]);
 
-int
+/*int
 main(int argc, char *argv[])
 {
     int num_nodes = 2*1024;
@@ -38,21 +37,21 @@ main(int argc, char *argv[])
         
     // complete task 4
     start = clock();
-    worker(num_nodes, 4);
+    perform_trial(num_nodes, 4);
     printf("Time in seconds to calculate: %f\n", 
         ((clock() - start) / (double)CLOCKS_PER_SEC ));
         
     // all done
     return 0;
-}
+}*/
 
 /*
  *  Completes the task passed in as which_part
  */
-void worker(int num_nodes, int which_part)
+double perform_trial(int num_nodes, int which_part)
 {   
     // now create the array to hold this data
-    // float *edge_arr = (float *) malloc(sizeof(float) * num_edges);
+    // double *edge_arr = (double *) malloc(sizeof(double) * num_edges);
     
     // initialize the heap variables
     init_Heap_vars(num_nodes, (num_nodes * (num_nodes-1))/2);
@@ -140,7 +139,7 @@ void worker(int num_nodes, int which_part)
              * 4     Random node positions in unit hypercube
              */
              
-            float check_val = 0;
+            double check_val = 0;
             // just generate a random edge since each edge is only examined once
             if(which_part == 1)    
                 check_val = (double)rand()/(double)RAND_MAX;
@@ -148,20 +147,20 @@ void worker(int num_nodes, int which_part)
             // else check for distance between nodes
             else if(which_part == 2)
             {
-                float parameter = pow((node_location[v.name].x-node_location[current_name].x), 2.)
+                double parameter = pow((node_location[v.name].x-node_location[current_name].x), 2.)
                                 + pow((node_location[v.name].y-node_location[current_name].y), 2.);
                 check_val = sqrt(parameter);
             }
             else if(which_part == 3)
             {
-                float parameter = pow((node_location[v.name].x-node_location[current_name].x), 2.)
+                double parameter = pow((node_location[v.name].x-node_location[current_name].x), 2.)
                                 + pow((node_location[v.name].y-node_location[current_name].y), 2.)
                                 + pow((node_location[v.name].z-node_location[current_name].z), 2.);
                 check_val = sqrt(parameter);
             }
             else if(which_part == 4)
             {
-                float parameter = pow((node_location[v.name].x-node_location[current_name].x), 2.)
+                double parameter = pow((node_location[v.name].x-node_location[current_name].x), 2.)
                                 + pow((node_location[v.name].y-node_location[current_name].y), 2.)
                                 + pow((node_location[v.name].z-node_location[current_name].z), 2.)
                                 + pow((node_location[v.name].w-node_location[current_name].w), 2.);
@@ -183,10 +182,10 @@ void worker(int num_nodes, int which_part)
     }   
     
     // sum and print the edges in the MST
-    sum_MST(num_nodes, graph);
+    double sum = sum_MST(num_nodes, graph);
     
     // sort edges by weight and returns largest
-    // float return_val = sort_MST(num_nodes, graph);
+    // double return_val = sort_MST(num_nodes, graph);
     
     // free heap
     free(Heap);
@@ -196,26 +195,30 @@ void worker(int num_nodes, int which_part)
     
     // free list
     free_list();
+
+    return sum;
+
 }
 
 /*
  *  Sums the weights of the edges in the MST and prints the result.
  *  Takes the number of nodes and the graph as arguments. Returns nothing
  */
-void sum_MST(int num_nodes, node graph[])
+double sum_MST(int num_nodes, node graph[])
 {
-    float sum_dist = 0;
+    double sum_dist = 0;
     for(int i =0; i < num_nodes; i++)
     {
         sum_dist = sum_dist + graph[i].dist;
     }
-    printf("Size of MST: %f\n", sum_dist);
+    //printf("Size of MST: %f\n", sum_dist);
+    return sum_dist;
 }
 
 /*
  *  Sorts the edges in the MST using (conveniently) heap sort. Returns the largest
  */
-float sort_MST(int num_nodes, node graph[])
+double sort_MST(int num_nodes, node graph[])
 {
     // initialize heap & location array
     node Heap[num_nodes];
@@ -232,7 +235,7 @@ float sort_MST(int num_nodes, node graph[])
     }
     
     // sort by removing from heap
-    float sorted_arr[num_nodes];
+    double sorted_arr[num_nodes];
     for(int i = 0; i < num_nodes; i++)
     {
         sorted_arr[i] = delete_min(Heap, location).dist;
@@ -269,7 +272,7 @@ float sort_MST(int num_nodes, node graph[])
     }
     
     
-    float prev_dists =0;
+    double prev_dists =0;
     for(int i = 0; i < num_nodes;i++)
     {
         int cur_dist = delete_min(Heap, location).dist;

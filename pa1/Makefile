@@ -2,7 +2,7 @@
 # Makefile
 #
 # Computer Science 124
-# Coding Project 1
+# Programming Assignment 1
 #
 
 
@@ -13,7 +13,7 @@ CC = gcc
 CFLAGS = -ggdb -std=c99 -Wall -Werror -lm
 
 # name for executable
-EXE = prim
+EXE = randmst
 
 # space-separated list of header files
 HDRS = d_ary_heap.h list.h
@@ -23,11 +23,10 @@ HDRS = d_ary_heap.h list.h
 LIBS =
 
 # space-separated list of source files
-SRCS = d_ary_heap.c prim.c list.c
+SRCS = d_ary_heap.c prim.c list.c randmst.c
 
 # automatically generated list of object files
 OBJS = $(SRCS:.c=.o)
-
 
 # default target
 $(EXE): $(OBJS) $(HDRS)
