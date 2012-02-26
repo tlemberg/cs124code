@@ -1,1 +1,3 @@
-double perform_trial(int numpoints, int dimension);
+#include "position.h"
+
+double perform_trial(int numpoints, int dimension, position *node_location);

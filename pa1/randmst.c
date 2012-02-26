@@ -3,20 +3,21 @@
 #include <time.h>
 
 #include "prim.h"
+#include "test.h"
 
-void perform_submission(int env, int numpoints, int numtrials, int dimension);
-void perform_developer(int env, int numpoints, int numtrials, int dimension);
+void perform_submission(int numpoints, int numtrials, int dimension);
+void perform_developer(int numpoints, int numtrials, int dimension);
+void perform_testing();
 int argtoi(char *arg);
 void print_misuse();
 void print_usage();
 
 enum {submission, developer} environment;
-int n_environment = 2;
 
 int main(int argc, char *argv[]) {
-  if(argc == 5) {
+  if(argc >= 2) {
     int env = argtoi(argv[1]);
-    if(env >= 0 && env < n_environment) {
+    if((env == 0 || env == 1) && argc == 5) {
       int numpoints = argtoi(argv[2]);
       int numtrials = argtoi(argv[3]);
       int dimension = argtoi(argv[4]);
@@ -27,10 +28,10 @@ int main(int argc, char *argv[]) {
         }
         switch(env) {
           case submission:
-            perform_submission(env, numpoints, numtrials, dimension);
+            perform_submission(numpoints, numtrials, dimension);
             break;
           case developer:
-            perform_developer(env, numpoints, numtrials, dimension);
+            perform_developer(numpoints, numtrials, dimension);
             break;
         }
         return 0;
@@ -38,6 +39,8 @@ int main(int argc, char *argv[]) {
         print_misuse();
         return -1;
       }
+    } else if(env == 2 && argc == 2) {
+      perform_testing();
     } else {
       print_misuse();
       return -1;
@@ -48,21 +51,21 @@ int main(int argc, char *argv[]) {
   }
 }
 
-void perform_submission(int env, int numpoints, int numtrials, int dimension) {
+void perform_submission(int numpoints, int numtrials, int dimension) {
   double sum = 0;
   for(int i = 0; i < numtrials; i++) {
-    double val = perform_trial(numpoints, dimension);
+    double val = perform_trial(numpoints, dimension, random_positions(numpoints, dimension));
     sum += val;
   }
   double avg = sum / (double)numtrials;
   printf("%f %d %d %d\n", avg, numpoints, numtrials, dimension);
 }
 
-void perform_developer(int env, int numpoints, int numtrials, int dimension) {
+void perform_developer(int numpoints, int numtrials, int dimension) {
   printf("Running %d trials of Prim's algorithm on %d points in %d-dimensional space...\n", numtrials, numpoints, dimension);
   double sum = 0;
   for(int i = 0; i < numtrials; i++) {
-    double val = perform_trial(numpoints, dimension);
+    double val = perform_trial(numpoints, dimension, random_positions(numpoints, dimension));
     printf("Trial %d, size of MST: %f\n", i + 1, val);
     sum += val;
   }
@@ -77,9 +80,10 @@ void print_misuse() {
 
 void print_usage() {
   printf("Usage:\n  randmst ENV NUMPOINTS NUMTRIALS DIMENSION\n");
-  printf("  ENV          # An integer on the interval [0, %d]\n", n_environment - 1);
+  printf("  ENV          # An integer on the interval [0, 2]\n");
   printf("                 # 0 -> Submission environment\n");
   printf("                 # 1 -> Developer environment\n");
+  printf("                 # 2 -> Testing environment\n");
   printf("  NUMPOINTS    # The number of points in the graph\n");
   printf("  NUMTRIALS    # The number of trials to perform\n");
   printf("  DIMENSION    # The number of dimensions assigned to each node\n");

@@ -16,14 +16,14 @@ CFLAGS = -ggdb -std=c99 -Wall -Werror -lm
 EXE = randmst
 
 # space-separated list of header files
-HDRS = d_ary_heap.h list.h
+HDRS = d_ary_heap.h list.h test.h prim.h position.h
 
 # space-separated list of libraries, if any,
 # each of which should be prefixed with -l
 LIBS =
 
 # space-separated list of source files
-SRCS = d_ary_heap.c prim.c list.c randmst.c
+SRCS = d_ary_heap.c prim.c list.c randmst.c test.c position.c
 
 # automatically generated list of object files
 OBJS = $(SRCS:.c=.o)
