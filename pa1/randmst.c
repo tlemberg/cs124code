@@ -54,7 +54,9 @@ int main(int argc, char *argv[]) {
 void perform_submission(int numpoints, int numtrials, int dimension) {
   double sum = 0;
   for(int i = 0; i < numtrials; i++) {
-    double val = perform_trial(numpoints, dimension, random_positions(numpoints, dimension));
+    position *positions = random_positions(numpoints, dimension);
+    double val = perform_trial(numpoints, dimension, positions);
+    free(positions);
     sum += val;
   }
   double avg = sum / (double)numtrials;
@@ -65,7 +67,9 @@ void perform_developer(int numpoints, int numtrials, int dimension) {
   printf("Running %d trials of Prim's algorithm on %d points in %d-dimensional space...\n", numtrials, numpoints, dimension);
   double sum = 0;
   for(int i = 0; i < numtrials; i++) {
-    double val = perform_trial(numpoints, dimension, random_positions(numpoints, dimension));
+    position *positions = random_positions(numpoints, dimension);
+    double val = perform_trial(numpoints, dimension, positions);
+    free(positions);
     printf("Trial %d, size of MST: %f\n", i + 1, val);
     sum += val;
   }
